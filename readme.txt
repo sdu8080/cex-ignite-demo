@@ -8,3 +8,4 @@ Note:
 4. use MYSQL DB
 5. use sql/tables.sql to create table
 6. use bin/ignite-schema-import.sh to generate data models and CacheConfig classes
+7. to run, inside eclipse, first run StartNode, then CreateCache, to test, run DemoMain
