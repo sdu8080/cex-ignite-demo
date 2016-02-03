@@ -80,7 +80,7 @@ public class DemoMain {
 
 		logger.info("start updateData...");
 		p.start("random update");
-		ExecutorService executor = Executors.newFixedThreadPool(5);
+		ExecutorService executor = Executors.newFixedThreadPool(10);
 		for (int i = 0; i < 10000; i++) {
 			Runnable worker = new WorkerThread(cache, size);
 			executor.execute(worker);
