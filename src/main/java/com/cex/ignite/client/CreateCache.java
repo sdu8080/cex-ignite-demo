@@ -38,6 +38,7 @@ import com.cex.ignite.model.TransactionKey;
 import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
 
 /**
+ * create a server cache with persistence store
  */
 public class CreateCache {
 	

@@ -30,23 +30,31 @@ public class DemoMain {
 
 	public static void main(String[] args) {
 		
-		logger.info("start demo...");
+		logger.info("start demo...");  
 		p = new Profiler("Demo");
 		p.setLogger(logger);
-		int size = 10000;
+		
+		
+		int size = 20000;
 		// initialize
 		IgniteCacheService service = IgniteCacheService.instance;
 		service.initialize();
-		// demo tests
-		remoteProcessing(service);
-		populateDate(service, size);
-		readData(service, size);
-		updateData(service, size);
-		nearCache(service, size);
-		getCacheSize(service);
-		// end tests
+		
+		for (int c = 0; c < 5; c++) {
+			logger.info("test round:"+c);
+			// demo tests
+			remoteProcessing(service);
+			populateDate(service, size);
+			readData(service, size);
+			updateData(service, size);
+			nearCache(service, size);
+			getCacheSize(service);
+			// end tests
+		}
+		
 		service.finish();  
 		// log performance data
+		p.stop();
 		p.log();
 	}
 
@@ -55,7 +63,10 @@ public class DemoMain {
 		
 		logger.info("start populateData...");
 		p.start("remove cache");
+		logger.info("remove all cache");
 		cache.removeAll();
+		logger.info("start write");
+		
 		p.start("write");
 		for (int i = 0; i < size; i++) {
 			TransactionKey key = new TransactionKey(Integer.toString(i));
@@ -73,7 +84,7 @@ public class DemoMain {
 		logger.info("start readData...");
 		Transaction txn2 = null;
 		p.start("read cache");
-		for(int k = size; k>0; k--){
+		for(int k = size-1; k>0; k--){
 			txn2 = cache.get(new TransactionKey(Integer.toString(k)));
 		}
 		logger.info("txn = "+txn2.toString());
