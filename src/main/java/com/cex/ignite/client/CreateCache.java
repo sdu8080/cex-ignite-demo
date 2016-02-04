@@ -28,6 +28,8 @@ import org.apache.ignite.cache.store.jdbc.CacheJdbcPojoStore;
 import org.apache.ignite.cache.store.jdbc.CacheJdbcPojoStoreFactory;
 import org.apache.ignite.cache.store.jdbc.dialect.MySQLDialect;
 import org.apache.ignite.configuration.CacheConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.cex.ignite.config.ConfigProperties;
 import com.cex.ignite.model.CacheConfig;
@@ -38,6 +40,8 @@ import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
 /**
  */
 public class CreateCache {
+	
+	private static Logger logger = LoggerFactory.getLogger(CreateCache.class);
 	
 	
     /**
@@ -67,7 +71,7 @@ public class CreateCache {
     /**
      */
     public static void main(String[] args) throws IgniteException {
-        System.out.println(">>> Create cache...");
+        logger.info(">>> Create cache...");
 
         // Start Ignite node.
         Ignition.setClientMode(true);
@@ -83,10 +87,14 @@ public class CreateCache {
             cfg.setCacheMode(CacheMode.PARTITIONED);
             cfg.setBackups(1);
 
+            // create a server partitioned cache
             try (IgniteCache<TransactionKey, Transaction> cache = ignite.getOrCreateCache(cfg)) {
-                System.out.println("cache created...");
+                logger.info("cache created...");
             }
+            
         }
+        
+       
     }
 
    

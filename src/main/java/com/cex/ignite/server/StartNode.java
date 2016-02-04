@@ -19,6 +19,8 @@ package com.cex.ignite.server;
 
 import org.apache.ignite.IgniteException;
 import org.apache.ignite.Ignition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.cex.ignite.config.ConfigProperties;
 
@@ -27,6 +29,8 @@ import com.cex.ignite.config.ConfigProperties;
  */
 public class StartNode {
 	
+	private static Logger logger = LoggerFactory.getLogger(StartNode.class);
+	
     /**
      * Starts demo node.
      *
@@ -34,7 +38,7 @@ public class StartNode {
      * @throws IgniteException If example execution failed.
      */
     public static void main(String[] args) throws IgniteException {
-        System.out.println(">>> Start demo node...");
+        logger.info(">>> Start demo server node...");
 
         Ignition.start(ConfigProperties.getProperty(ConfigProperties.configFile));
     }

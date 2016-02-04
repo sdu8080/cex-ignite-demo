@@ -4,18 +4,27 @@ import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.IgniteException;
 import org.apache.ignite.Ignition;
+import org.apache.ignite.cache.eviction.lru.LruEvictionPolicy;
+import org.apache.ignite.configuration.NearCacheConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.cex.ignite.config.ConfigProperties;
 import com.cex.ignite.model.Transaction;
 import com.cex.ignite.model.TransactionKey;
 
 public class IgniteCacheService {
+	
+	private static Logger logger = LoggerFactory.getLogger(IgniteCacheService.class);
 
+	// singleton instance
 	public static IgniteCacheService instance = new IgniteCacheService();
 
 	private Ignite ignite = null;
 
 	private IgniteCache<TransactionKey, Transaction> cache = null;
+	
+	private IgniteCache<TransactionKey, Transaction> nearCache = null;
 
 	private boolean initialized = false;
 
@@ -38,15 +47,32 @@ public class IgniteCacheService {
 
 	private void initTxnCache() {
 		try {
-			cache = ignite.getOrCreateCache("TransactionCache");
+			String cacheName = ConfigProperties.getProperty(ConfigProperties.ccheName);
+			
+			int nearCacheSize = Integer.parseInt(ConfigProperties.getProperty("NEARCACHE_SIZE"));
+			
+			NearCacheConfiguration<TransactionKey, Transaction> nearCfg = new NearCacheConfiguration<>();
+
+			nearCfg.setNearEvictionPolicy(new LruEvictionPolicy<TransactionKey, Transaction>(nearCacheSize));
+
+			// create clisnt side near cache before get the server txn cache
+			nearCache = ignite.getOrCreateNearCache(cacheName, nearCfg);
+			
+			// get the server side txn cache
+			cache = ignite.getOrCreateCache(cacheName);
+			
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("failed to create ignite cache.", e);
 		}
 
 	}
 
 	public IgniteCache<TransactionKey, Transaction> getTxnCache() {
 		return cache;
+	}
+	
+	public IgniteCache<TransactionKey, Transaction> getNearCache() {
+		return nearCache;
 	}
 
 	public Ignite getIgnite() {
@@ -55,11 +81,19 @@ public class IgniteCacheService {
 
 	public void finish() {
 
+		if (nearCache != null) {
+			try {
+				nearCache.close();
+			} catch (Exception e) {
+				logger.error("failed to close the nearCache", e);
+			}
+		}
+		
 		if (cache != null) {
 			try {
 				cache.close();
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("failed to close the txnCache", e);
 			}
 		}
 
@@ -67,7 +101,7 @@ public class IgniteCacheService {
 			try {
 				ignite.close();
 			} catch (IgniteException e) {
-				e.printStackTrace();
+				logger.error("failed to close the ignite instance", e);
 			}
 		}
 	}

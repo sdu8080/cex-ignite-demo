@@ -8,6 +8,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.ignite.IgniteCache;
+import org.apache.ignite.cache.CachePeekMode;
 import org.apache.ignite.lang.IgniteCallable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,24 +25,28 @@ public class DemoMain {
 	
 	static AtomicInteger counter = new AtomicInteger(0);
 	
-	static Profiler p = new Profiler("Demo");
+	static Profiler p = null;
 	
-	static{
-		p.setLogger(logger);
-	}
 
 	public static void main(String[] args) {
 		
 		logger.info("start demo...");
+		p = new Profiler("Demo");
+		p.setLogger(logger);
 		int size = 10000;
+		// initialize
 		IgniteCacheService service = IgniteCacheService.instance;
 		service.initialize();
+		// demo tests
 		remoteProcessing(service);
 		populateDate(service, size);
 		readData(service, size);
 		updateData(service, size);
+		nearCache(service, size);
+		getCacheSize(service);
+		// end tests
 		service.finish();  
-		
+		// log performance data
 		p.log();
 	}
 
@@ -98,7 +103,7 @@ public class DemoMain {
 
 	}
 	
-	public static class WorkerThread implements Runnable{
+	static class WorkerThread implements Runnable{
 		
 		IgniteCache<TransactionKey, Transaction> cache = null;
 		int n = 0;
@@ -123,7 +128,7 @@ public class DemoMain {
 		
 	}
 
-	public static void remoteProcessing(IgniteCacheService service) {
+	private static void remoteProcessing(IgniteCacheService service) {
 		Collection<IgniteCallable<Integer>> calls = new ArrayList<>();
 
 		// Iterate through all the words in the sentence and create Callable
@@ -141,6 +146,39 @@ public class DemoMain {
 		int sum = res.stream().mapToInt(Integer::intValue).sum();
 
 		logger.info("Total number of characters is '" + sum + "'.");
+	}
+	
+	private static void nearCache(IgniteCacheService service, int size) {
+		
+		logger.info("start near cache...");
+		p.start("nearCache");
+		Transaction t = null;
+		for(int i = 0; i< 200; i++){
+			TransactionKey key = new TransactionKey(Integer.toString(i));
+			t = service.getNearCache().get(key);
+		}
+		logger.info(t.toString());
+		
+		p.start("nearCache end");
+		
+	}
+	
+	private static void getCacheSize(IgniteCacheService service){
+		int size1 = service.getNearCache().size(CachePeekMode.NEAR);
+		logger.info("near cache size = "+size1);
+		int size2 = service.getTxnCache().size(CachePeekMode.ALL);
+		logger.info("total cache size = "+size2);
+		int size3 = service.getTxnCache().size(CachePeekMode.PRIMARY);
+		logger.info("partitioned cache size = "+size3);
+		int size4 = service.getTxnCache().size(CachePeekMode.BACKUP);
+		logger.info("backup cache size = "+size4);
+		int size5 = service.getTxnCache().size(CachePeekMode.ONHEAP);
+		logger.info("onheap cache size = "+size5);
+		int size6 = service.getTxnCache().size(CachePeekMode.OFFHEAP);
+		logger.info("offheap cache size = "+size6);
+		int size7 = service.getTxnCache().size(CachePeekMode.SWAP);
+		logger.info("swap cache size = "+size7);
+		
 	}
 
 }

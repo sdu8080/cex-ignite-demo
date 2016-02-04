@@ -1,4 +1,4 @@
-select * from transaction where transaction_id > 10000;
+select * from transaction where remark like 'update%'
 
 SET SQL_SAFE_UPDATES = 0;
 
