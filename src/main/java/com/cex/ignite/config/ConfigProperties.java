@@ -9,7 +9,7 @@ public class ConfigProperties {
 	
 	public static final String configFile = "CONFIG_FILE";
 
-	public static final String ccheName = "CACHE_NAME";
+	public static final String cacheName = "CACHE_NAME";
 
 	public static final String dbUrl = "DB_URL";
 

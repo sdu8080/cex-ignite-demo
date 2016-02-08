@@ -79,7 +79,7 @@ public class CreateCache {
         try (Ignite ignite = Ignition.start(ConfigProperties.getProperty(ConfigProperties.configFile))) {
             // Configure cache store.
             CacheConfiguration<TransactionKey, Transaction> cfg =
-                CacheConfig.cache(ConfigProperties.getProperty(ConfigProperties.ccheName), new MySQLStoreFactory<TransactionKey, Transaction>());
+                CacheConfig.cache(ConfigProperties.getProperty(ConfigProperties.cacheName), new MySQLStoreFactory<TransactionKey, Transaction>());
             
             cfg.setWriteBehindEnabled(true);
             cfg.setAtomicityMode(CacheAtomicityMode.TRANSACTIONAL);

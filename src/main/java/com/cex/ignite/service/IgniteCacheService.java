@@ -47,7 +47,7 @@ public class IgniteCacheService {
 
 	private void initTxnCache() {
 		try {
-			String cacheName = ConfigProperties.getProperty(ConfigProperties.ccheName);
+			String cacheName = ConfigProperties.getProperty(ConfigProperties.cacheName);
 			
 			int nearCacheSize = Integer.parseInt(ConfigProperties.getProperty("NEARCACHE_SIZE"));
 			
