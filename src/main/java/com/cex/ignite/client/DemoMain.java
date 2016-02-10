@@ -38,7 +38,7 @@ public class DemoMain {
 		int size = 20000;
 		// initialize
 		IgniteCacheService service = IgniteCacheService.instance;
-		service.initialize();
+		service.initialize(true);
 		
 		for (int c = 0; c < 5; c++) {
 			logger.info("test round:"+c);

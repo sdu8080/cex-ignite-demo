@@ -87,6 +87,7 @@ public class CreateCache {
             // partitioned with 1 backup for each partition
             cfg.setCacheMode(CacheMode.PARTITIONED);
             cfg.setBackups(1);
+            
 
             // create a server partitioned cache
             try (IgniteCache<TransactionKey, Transaction> cache = ignite.getOrCreateCache(cfg)) {

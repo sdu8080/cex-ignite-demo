@@ -5,6 +5,7 @@ import org.apache.ignite.IgniteCache;
 import org.apache.ignite.IgniteException;
 import org.apache.ignite.Ignition;
 import org.apache.ignite.cache.eviction.lru.LruEvictionPolicy;
+import org.apache.ignite.configuration.IgniteConfiguration;
 import org.apache.ignite.configuration.NearCacheConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,9 +32,9 @@ public class IgniteCacheService {
 	private IgniteCacheService() {
 	}
 
-	public synchronized void initialize() {
+	public synchronized void initialize(boolean clientMode) {
 		if (!initialized) {
-			Ignition.setClientMode(true);
+			Ignition.setClientMode(clientMode);
 			try {
 				ignite = Ignition.start(ConfigProperties
 						.getProperty(ConfigProperties.configFile));
