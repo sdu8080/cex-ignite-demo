@@ -5,7 +5,6 @@ import org.apache.ignite.IgniteCache;
 import org.apache.ignite.IgniteException;
 import org.apache.ignite.Ignition;
 import org.apache.ignite.cache.eviction.lru.LruEvictionPolicy;
-import org.apache.ignite.configuration.IgniteConfiguration;
 import org.apache.ignite.configuration.NearCacheConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +37,7 @@ public class IgniteCacheService {
 			try {
 				ignite = Ignition.start(ConfigProperties
 						.getProperty(ConfigProperties.configFile));
-				initTxnCache();
+				initTxnCache(clientMode);
 			} catch (IgniteException e) {
 				e.printStackTrace();
 			}
@@ -46,7 +45,7 @@ public class IgniteCacheService {
 		}
 	}
 
-	private void initTxnCache() {
+	private void initTxnCache(boolean clientMode) {
 		try {
 			String cacheName = ConfigProperties.getProperty(ConfigProperties.cacheName);
 			
@@ -57,7 +56,9 @@ public class IgniteCacheService {
 			nearCfg.setNearEvictionPolicy(new LruEvictionPolicy<TransactionKey, Transaction>(nearCacheSize));
 
 			// create clisnt side near cache before get the server txn cache
-			nearCache = ignite.getOrCreateNearCache(cacheName, nearCfg);
+			if(clientMode){
+				nearCache = ignite.getOrCreateNearCache(cacheName, nearCfg);
+			}
 			
 			// get the server side txn cache
 			cache = ignite.getOrCreateCache(cacheName);
