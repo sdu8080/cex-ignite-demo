@@ -35,7 +35,7 @@ public class DemoMain {
 		p.setLogger(logger);
 		
 		
-		int size = 20000;
+		int size = 200;
 		// initialize
 		IgniteCacheService service = IgniteCacheService.instance;
 		service.initialize(true);

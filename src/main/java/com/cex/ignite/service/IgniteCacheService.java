@@ -45,7 +45,7 @@ public class IgniteCacheService {
 		}
 	}
 
-	private void initTxnCache(boolean clientMode) {
+	public void initTxnCache(boolean clientMode) {
 		try {
 			String cacheName = ConfigProperties.getProperty(ConfigProperties.cacheName);
 			

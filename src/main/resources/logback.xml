@@ -13,8 +13,10 @@
 		additivity="false">
 		<appender-ref ref="STDOUT" />
 	</logger>
+	
+	
 
-	<root level="error">
+	<root level="debug">
 		<appender-ref ref="STDOUT" />
 	</root>
 
